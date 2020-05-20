@@ -1,6 +1,6 @@
 {
   "name": "@ganbarodigital/ts-lib-augmentations",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Add additional features to a TypeScript type at runtime",
   "repository": "github:ganbarodigital/ts-lib-augmentations",
   "main": "lib/index.js",
