@@ -1,8 +1,8 @@
 {
-  "name": "@ganbarodigital/<<YOUR-PACKAGE-NAME>>",
+  "name": "@ganbarodigital/ts-lib-augmentations",
   "version": "0.0.1",
-  "description": "Converts human-readable UUIDs to bytes",
-  "repository": "github:ganbarodigital/<<YOUR-PACKAGE-NAME>>",
+  "description": "Add additional features to a TypeScript type at runtime",
+  "repository": "github:ganbarodigital/ts-lib-augmentations",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -17,7 +17,12 @@
   "contributors": [
     "Stuart Herbert <stuherbert@ganbarodigital.com> (https://ganbarodigital.com)"
   ],
-  "keywords": [],
+  "keywords": [
+    "composition",
+    "extends",
+    "intersection",
+    "mixin"
+  ],
   "files": [
     "lib/**/*",
     "CHANGELOG.md",
@@ -41,6 +46,6 @@
     "rimraf": "^3.0.0",
     "ts-node": "^8.0.0",
     "tslint": "^5.20.1",
-    "typescript": "^3.8.0"
+    "typescript": "^3.9.0"
   }
 }
