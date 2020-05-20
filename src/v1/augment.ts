@@ -31,25 +31,38 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { ErrorTable, ErrorTableTemplate } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
-import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
-import { ExampleTemplate } from "./ExampleError";
+/**
+ * Turns `target` into an instance of the intersection type, by
+ * adding `source`'s attributes and methods to the `target`.
+ *
+ * Pass in `<Source>.prototype` if you only want to add methods to
+ * `target`.
+ * Pass in a 3rd parameter - an instance of `<Source>` - if you also
+ * need to copy attributes over to `target`.
+ *
+ * NOTE: returns the (modified) original `target` object.
+ */
+export function augment<Target, Source>(target: Target, ...sources: Source[]): Target & Source {
+    // nothing special here
+    //
+    // we just copy from each source in turn over to our target
+    sources.forEach((source) => {
+        const props = Object.getOwnPropertyDescriptors(source);
 
-const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-augmentations/lib/v1");
+        // we know that `props` only contains attributes that we
+        // want to copy across, so this is safe
+        //
+        // tslint:disable-next-line: forin
+        for (const name in props) {
+            Object.defineProperty(
+                target,
+                name,
+                props[name],
+            );
+        }
+    });
 
-type ModuleErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
-
-export class ModuleErrorTable implements ErrorTable {
-    [key: string]: ModuleErrorTableIndex<ModuleErrorTable>;
-
-    public "example": ExampleTemplate = {
-        packageName: MODULE_NAME,
-        errorName: "example",
-        status: httpStatusCodeFrom(500),
-        detail: "this is an example error from the ts-lib-template",
-    };
+    // all done
+    return target as Target & Source;
 }
-
-export const ERROR_TABLE = new ModuleErrorTable();

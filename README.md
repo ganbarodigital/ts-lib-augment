@@ -4,6 +4,16 @@
 
 Use this TypeScript library to add additional features to a TypeScript type at runtime.
 
+- [Introduction](#introduction)
+- [Quick Start](#quick-start)
+- [API](#api)
+  - [augment()](#augment)
+- [NPM Scripts](#npm-scripts)
+  - [npm run clean](#npm-run-clean)
+  - [npm run build](#npm-run-build)
+  - [npm run test](#npm-run-test)
+  - [npm run cover](#npm-run-cover)
+
 ## Quick Start
 
 ```
@@ -20,7 +30,32 @@ __VS Code users:__ once you've added a single import anywhere in your project, y
 
 ## API
 
-TBD.
+### augment()
+
+```typescript
+/**
+ * Turns `target` into an instance of the intersection type, by
+ * adding `source`'s attributes and methods to the `target`.
+ *
+ * Pass in `<Source>.prototype` if you only want to add methods to
+ * `target`.
+ * Pass in a 3rd parameter - an instance of `<Source>` - if you also
+ * need to copy attributes over to `target`.
+ *
+ * NOTE: returns the (modified) original `target` object.
+ */
+export function augment<Target, Source>(target: Target, ...sources: Source[]): Target & Source;
+```
+
+`augment()` is a _transform function_. It copes any visible properties from each `source` onto the `target`, and then returns the modified `target` object as an instance of the intersection type.
+
+#### Q & A:
+
+* why doesn't `augment()` treat `target` as immutable?
+
+  In a word: _performance_. In real-world uses, `target` is going to be the largest object to start with, and each `source` will typically only have one or two methods to be copied across.
+
+  If we had to copy everything from `target` too, that would make `augment()` much more expensive, because we'd have to do a deep clone of `target` to make this work without surprises.
 
 ## NPM Scripts
 
