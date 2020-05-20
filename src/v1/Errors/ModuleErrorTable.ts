@@ -37,8 +37,7 @@ import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
 import { ExampleTemplate } from "./ExampleError";
 
-// @TODO: CHANGE ME TO BE THE RIGHT PACKAGE
-const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-XXX");
+const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-augmentations/lib/v1");
 
 type ModuleErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
 
