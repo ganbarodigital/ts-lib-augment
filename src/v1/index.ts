@@ -32,6 +32,4 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-//
-// This file is deliberately empty.
-//
+export * from "./augment";
