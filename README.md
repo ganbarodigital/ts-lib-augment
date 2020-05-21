@@ -35,7 +35,7 @@ npm install @ganbarodigital/ts-lib-augmentations
 
 ```typescript
 // add this import to your Typescript code
-import { extend } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
+import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -350,7 +350,7 @@ export function addExtensions<Target, Source>(target: Target, ...sources: Source
 import { buildProtocolDefinition } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 // our input parameters and/or return type
-import { ProtocolDefinition } from "@ganbarodigital/ts-lib/augmentations/lib/v1";
+import { ProtocolDefinition } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 /**
  * type factory. Builds a ProtocolDefinition.
@@ -368,7 +368,7 @@ export function buildProtocolDefinition(input: object): ProtocolDefinition;
 import { buildDeepProtocolDefinition } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 // our input parameters and/or return type
-import { ProtocolDefinition } from "@ganbarodigital/ts-lib/augmentations/lib/v1";
+import { ProtocolDefinition } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 /**
  * type factory. Builds a ProtocolDefinition.
@@ -396,7 +396,7 @@ export function buildDeepProtocolDefinition(input: object): ProtocolDefinition;
 
 ```typescript
 // how to import it into your own code
-import { hasAllMethodsCalled } from "@ganbarodigital/ts-lib-addExtensionsations/lib/v1";
+import { hasAllMethodsCalled } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 /**
  * data guard. Returns `true` if `input` has all the methods named in `names`.
