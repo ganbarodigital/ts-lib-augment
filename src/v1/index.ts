@@ -32,5 +32,5 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./augment";
+export * from "./addExtensions";
 export * from "./hasAllMethodsCalled";

@@ -34,7 +34,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { augment } from "./augment";
+import { addExtensions } from "./addExtensions";
 
 class Unit1 {
     public prop1 = 100;
@@ -66,7 +66,7 @@ describe("augment()", () => {
         it("copies methods from source prototype to target", () => {
             const target = new Unit1();
 
-            const unit = augment(target, Unit2.prototype);
+            const unit = addExtensions(target, Unit2.prototype);
 
             // the properties haven't been copied over,
             // only the methods defined by Unit2 itself
@@ -78,7 +78,7 @@ describe("augment()", () => {
             const seed = new Unit2();
 
             // we use the seed to give us attributes to copy over
-            const unit = augment(target, Unit2.prototype, seed);
+            const unit = addExtensions(target, Unit2.prototype, seed);
 
             expect(unit.countProps()).to.equal(300);
         });
@@ -87,7 +87,7 @@ describe("augment()", () => {
             const source = new Unit2();
             const target = new Unit1();
 
-            const unit = augment(target, source);
+            const unit = addExtensions(target, source);
 
             expect(unit).to.be.instanceOf(Unit1);
         });
@@ -95,7 +95,7 @@ describe("augment()", () => {
         it("`target` is NOT an instanceof `source`'s class", () => {
             const target = new Unit1();
 
-            const unit = augment(target, Unit2.prototype);
+            const unit = addExtensions(target, Unit2.prototype);
 
             expect(unit).to.not.be.instanceOf(Unit2);
         });
@@ -103,7 +103,7 @@ describe("augment()", () => {
         it("the returned value is the original `target` parameter", () => {
             const target = new Unit1();
 
-            const unit = augment(target, Unit2.prototype);
+            const unit = addExtensions(target, Unit2.prototype);
 
             target.prop1 = 300;
             expect(unit.prop1).to.equal(300);
@@ -113,7 +113,7 @@ describe("augment()", () => {
             const target = new Unit1();
             const control = new Unit1();
 
-            const unit = augment(target, Unit2.prototype);
+            const unit = addExtensions(target, Unit2.prototype);
 
             expect(unit.countProps).to.not.equal(undefined);
             expect((control as Unit2).countProps).to.equal(undefined);

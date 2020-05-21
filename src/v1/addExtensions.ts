@@ -43,7 +43,7 @@
  *
  * NOTE: returns the (modified) original `target` object.
  */
-export function augment<Target, Source>(target: Target, ...sources: Source[]): Target & Source {
+export function addExtensions<Target, Source>(target: Target, ...sources: Source[]): Target & Source {
     // nothing special here
     //
     // we just copy from each source in turn over to our target
