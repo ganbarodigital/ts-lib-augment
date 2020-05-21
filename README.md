@@ -57,6 +57,27 @@ export function augment<Target, Source>(target: Target, ...sources: Source[]): T
 
   If we had to copy everything from `target` too, that would make `augment()` much more expensive, because we'd have to do a deep clone of `target` to make this work without surprises.
 
+### hasAllMethodsCalled()
+
+```typescript
+// how to import it into your own code
+import { hasAllMethodsCalled } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+
+/**
+ * data guard. Returns `true` if `input` has all the methods named in `names`.
+ * Returns false otherwise.
+ *
+ * Supports methods inherited from parent classes.
+ */
+export function hasAllMethodsCalled(input: IndexedObject, names: string[]): boolean {
+    return names.every((name) => input[name] && typeof input[name] === "function");
+}
+```
+
+`hasAllMethodsCalled()` is a _data guard_. Use it to check if an object defines all the methods that you're looking to call.
+
+**NOTE that we don't check the type signature of the methods, only their names.** This can still blow up in your face at runtime. Until JavaScript supports more comprehensive reflection, this risk can't be helped.
+
 ## NPM Scripts
 
 ### npm run clean

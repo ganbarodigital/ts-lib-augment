@@ -23,4 +23,12 @@ The following changes have been completed, and will be included in the next tagg
 
 ### New
 
+* Added `hasAllMethodsCalled()`.
+
+## v0.1.0
+
+Released Wednesday, 20th May 2020.
+
+### New
+
 * Added `augment()`

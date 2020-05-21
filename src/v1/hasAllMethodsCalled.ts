@@ -32,5 +32,19 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./augment";
-export * from "./hasAllMethodsCalled";
+/**
+ * syntactic sugar to keep the TypeScript compiler happy
+ */
+interface IndexedObject {
+    [name: string]: any;
+}
+
+/**
+ * data guard. Returns `true` if `input` has all the methods named in `names`.
+ * Returns false otherwise.
+ *
+ * Supports methods inherited from parent classes.
+ */
+export function hasAllMethodsCalled(input: IndexedObject, names: string[]): boolean {
+    return names.every((name) => input[name] && typeof input[name] === "function");
+}
