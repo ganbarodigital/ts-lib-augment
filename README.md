@@ -13,6 +13,7 @@ Use this TypeScript library to add additional features to a TypeScript type at r
   - [How Do We Write The Code For An Extension?](#how-do-we-write-the-code-for-an-extension)
   - [How Do We Use An Extension?](#how-do-we-use-an-extension)
   - [That Seems Like A Faff](#that-seems-like-a-faff)
+  - [Programming By Feature aka The Golang Thing](#programming-by-feature-aka-the-golang-thing)
 - [API](#api)
   - [ProtocolDefinition](#protocoldefinition)
   - [addExtensions()](#addextensions)
@@ -43,7 +44,7 @@ __VS Code users:__ once you've added a single import anywhere in your project, y
 
 ### What Are Protocols and Extensions?
 
-An _extension_ is functionality that has been added to a pre-existing type definition. A _protocol_ is a description of an _extension_. We use _protocols_ at runtime to
+An _extension_ is functionality that has been added to a pre-existing type definition. A _protocol_ is a description of an _extension_. We use _protocols_ at compile-time to make sure a function or method parameter has the functionality we need, and we use _protocols_ at runtime to detect and access optional functionality.
 
 Here's a concrete example:
 
@@ -119,20 +120,27 @@ const GetMediaTypeProtocol = [ "getMediaType" ];
 
 ### How Do We Use A Protocol Definition?
 
-The first thing we can do with these definitions is to catch problems at compile-time. In this example, `input` must be an object that is both a `Filepath` and it must support the `GetMediaType` extension. If it does not, the code will not compile.
+The first thing we can do with these definitions is to catch problems at compile-time. In this example, `input` must be an object:
+
+* that is both a `Filepath`, and
+* it must support the `GetMediaType` extension.
+
+If it does not, the code will not compile.
 
 ```typescript
+// we use an intersection type to tell the compiler
+// that we need our input to support multiple things
 function isJson(input: Filepath & GetMediaType) {
     return input.getMediaType() === "text/json";
 }
 ```
 
-Design your code to catch as many problems as possible at compile-time.
+Design your code to catch as many problems as possible at compile-time. It can _greatly_ simplify your code in the long-run.
 
-Sometimes, that isn't possible. For that, we need to use a runtime check. Here's an example of that:
+Sometimes, that just isn't possible. Sometimes, we need to use a runtime check. Here's an example of that:
 
 ```typescript
-import { implementsProtocol } from "@ganbarodigital/ts-lib-addExtensionsations/lib/v1";
+import { implementsProtocol } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 // the `MaybeGetMediaType` type isn't for the compiler
 //
@@ -252,6 +260,47 @@ Compare that with _protocols_ and _extensions_:
 * And the extension's interface and protocol definition aren't unique to `Filepath`. They can be reused - without modification - to create an extension for any other type that does the same thing.
 
 A little bit of extra setup work gives us a lot of extra benefits. Our code is explicit, not just for the compiler, but for the developer too. Our concept becomes reusable, allowing us to do the Golang thing and move more towards consuming interfaces over explicit types. And the code remains simple, robust, and largely maintenance-free.
+
+### Programming By Feature aka The Golang Thing
+
+Something Golang's standard library does exceptionally well is use interfaces everywhere instead of concrete types. Golang's standard library defines lots of very small interfaces - often containing only one or two methods. Both the standard library and userland code is written to accept and use these very targetted interfaces.
+
+Once we're used to working with _extensions_ and _protocols_, we can do the same in our TypeScript modules.
+
+Here's the two examples from the beginning of this _Concepts_ section. We've updated the parameter types in both examples to only ask for the extension that they need. We've basically dropped the `Filepath` requirement, because our examples were not relying on any of the `Filepath` functionality at all.
+
+The end result? This code can now be applied to _any_ type that supports the `GetMediaType` protocol **without further modification**. Our code just got a whole lot more reusable.
+
+```typescript
+// we can use just GetMediaType here, because we don't need to know
+// anything else about `input` for our code to work
+function isJson(input: GetMediaType) {
+    return input.getMediaType() === "text/json";
+}
+```
+
+```typescript
+import { implementsProtocol } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+
+// we can use `MaybeGetMediaType` here, because we don't need to know
+// anything else about `input` for our code to work
+//
+// we're now using `MaybeGetMediaType` to tell the compiler what we need,
+// as *well* as using it as documentation for developers
+function isJson(input: MaybeGetMediaType) {
+    // implementsProtocol() is a (very basic) type guard.
+    //
+    // it checks the `input` object, to see if it contains the functions
+    // listed in the `GetMediaTypeProtocol`.
+    if (!implementsProtocol(input, GetMediaTypeProtocol)) {
+       return false;
+    }
+
+    // if we get here, we've convinced the TypeScript compiler that this
+    // code will *probably* work
+    return input.getMediaType() === "text/json";
+}
+```
 
 ## API
 
