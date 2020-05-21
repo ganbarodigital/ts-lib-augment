@@ -31,10 +31,52 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+import { addExtensions } from "./addExtensions";
+import { buildProtocolDefinition } from "./buildProtocolDefinition";
+import { implementsProtocol } from "./implementsProtocol";
+
+interface ExampleValue {
+    valueOf(): string;
+}
+
+interface GuessMediaType {
+    guessMediaType(): string;
+}
+
+interface UnitTestGuessMediaType extends ExampleValue, GuessMediaType { }
+class UnitTestGuessMediaType {
+    public guessMediaType() {
+        return this.valueOf();
+    }
+}
+
+// tslint:disable-next-line: max-classes-per-file
+class UnitTestExample {
+    public constructor(private value: string) {}
+
+    public valueOf() { return this.value; }
+}
+
+describe("buildProtocolDefinition()", () => {
+    it("can use the implementation's prototype", () => {
+        const expectedValue = [ "guessMediaType" ];
+        const actualValue = buildProtocolDefinition(UnitTestGuessMediaType.prototype);
+
+        expect(actualValue).to.eql(expectedValue);
+    });
+
+    it("can be used with implementsProtocol()", () => {
+        const unit = addExtensions(
+            new UnitTestExample("text/html"),
+            UnitTestGuessMediaType.prototype,
+        );
+
+        const GuessMediaTypeProtocol = buildProtocolDefinition(UnitTestGuessMediaType.prototype);
+
+        const actualValue = implementsProtocol<GuessMediaType>(unit, GuessMediaTypeProtocol);
+        expect(actualValue).to.equal(true);
+    });
+});

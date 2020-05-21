@@ -32,9 +32,29 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+import { hasAllMethodsCalled } from "./hasAllMethodsCalled";
+import { ProtocolDefinition } from "./ProtocolDefinition";
+
+/**
+ * type guard. Returns `true` if `input` has all the methods described
+ * in `protocol`. Returns `false` otherwise.
+ *
+ * We check:
+ * - that the methods all exist on input
+ *
+ * We do not check:
+ * - that the methods have the right type signatures
+ * - for Symbols
+ */
+export function implementsProtocol<T>(
+    input: object & ({} | T),
+    protocol: ProtocolDefinition,
+): input is T {
+    // special case
+    if (protocol.length < 1) {
+        return false;
+    }
+
+    // okay, we're good to go here
+    return hasAllMethodsCalled(input, protocol);
+}

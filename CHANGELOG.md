@@ -28,6 +28,10 @@ The following changes have been completed, and will be included in the next tagg
 ### New
 
 * Added `hasAllMethodsCalled()`.
+* Added `buildDeepProtocolDefinition()`.
+* Added `buildProtocolDefinition()`.
+* Added `implementsProtocol()`.
+* Added `PrototypeDefinition`.
 
 ## v0.1.0
 

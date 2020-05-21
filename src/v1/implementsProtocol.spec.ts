@@ -31,10 +31,45 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+import { implementsProtocol } from "./implementsProtocol";
+
+interface GuessMediaType {
+    guessMediaType(): string;
+}
+
+const GuessMediaTypeProtocol = [ "guessMediaType" ];
+
+interface Retrieve {
+    retrieve(): any;
+}
+const RetrieveProtocol = [ "retrieve" ];
+
+// tslint:disable-next-line: max-classes-per-file
+class UnitTestExample {
+    public fn1() {
+        return;
+    }
+
+    public guessMediaType() {
+        return "text/html";
+    }
+}
+
+describe("implementsProtocol()", () => {
+    it("returns `true` if an object implements the given protocol", () => {
+        const unit = new UnitTestExample();
+
+        const actualValue = implementsProtocol<GuessMediaType>(unit, GuessMediaTypeProtocol);
+        expect(actualValue).to.equal(true);
+    });
+
+    it("returns `false` if an object does not implement the given protocol", () => {
+        const unit = new UnitTestExample();
+
+        const actualValue = implementsProtocol<Retrieve>(unit, RetrieveProtocol);
+        expect(actualValue).to.equal(false);
+    });
+});
