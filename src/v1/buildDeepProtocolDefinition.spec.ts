@@ -31,10 +31,52 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+import { buildDeepProtocolDefinition } from "./buildDeepProtocolDefinition";
+
+// this is the type that we are going to Extend
+class ExampleValue {
+    public constructor(private value: string) { }
+    public valueOf(): string {
+        return this.value;
+    }
+}
+
+// protocol, without any base class to worry about
+interface GuessMediaType {
+    guessMediaType(): string;
+}
+
+// extension, without any base class to worry about
+interface UnitTestGuessMediaType extends ExampleValue, GuessMediaType { }
+// tslint:disable-next-line: max-classes-per-file
+class UnitTestGuessMediaType {
+    public guessMediaType() {
+        return this.valueOf();
+    }
+}
+
+// protocol, that has a base class
+interface GetMediaType extends GuessMediaType {
+    getMediaType(): string;
+}
+
+// extension, that has a base class
+interface UnitTestGetMediaType extends ExampleValue, GetMediaType { }
+// tslint:disable-next-line: max-classes-per-file
+class UnitTestGetMediaType extends UnitTestGuessMediaType {
+    public getMediaType() {
+        return this.valueOf();
+    }
+}
+
+describe("buildDeepProtocolDefinition()", () => {
+    it("can detect methods defined in a base class", () => {
+        const expectedValue = [ "getMediaType", "guessMediaType" ];
+        const actualValue = buildDeepProtocolDefinition(UnitTestGetMediaType.prototype);
+
+        expect(actualValue).to.eql(expectedValue);
+    });
+});

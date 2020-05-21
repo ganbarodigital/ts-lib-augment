@@ -32,9 +32,19 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+import { ProtocolDefinition } from "./ProtocolDefinition";
+
+/**
+ * type factory. Builds a ProtocolDefinition.
+ *
+ * It will *NOT* pick up methods defined in parent classes. Use
+ * `buildDeepProtocolDefinition()` for that.
+ */
+export function buildProtocolDefinition<T extends object>(input: T): ProtocolDefinition {
+    return Object.getOwnPropertyNames(input)
+        .filter((name) =>
+            input[name as keyof T]
+            && typeof input[name as keyof T] === "function"
+            && name !== "constructor",
+        );
+}

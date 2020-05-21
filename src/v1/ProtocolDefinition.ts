@@ -32,9 +32,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+/**
+ * Contains a list of the methods that make up an Extension.
+ *
+ * This type is subject to change in the future. For forward-compatibility,
+ * build it using `buildProtocolDefinition()`.
+ */
+export type ProtocolDefinition = string[];

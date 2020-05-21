@@ -31,38 +31,45 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { expect } from "chai";
+import { describe } from "mocha";
 
-/**
- * Turns `target` into an instance of the intersection type, by
- * adding `source`'s attributes and methods to the `target`.
- *
- * Pass in `<Source>.prototype` if you only want to add methods to
- * `target`.
- * Pass in a 3rd parameter - an instance of `<Source>` - if you also
- * need to copy attributes over to `target`.
- *
- * NOTE: returns the (modified) original `target` object.
- */
-export function augment<Target, Source>(target: Target, ...sources: Source[]): Target & Source {
-    // nothing special here
-    //
-    // we just copy from each source in turn over to our target
-    sources.forEach((source) => {
-        const props = Object.getOwnPropertyDescriptors(source);
+import { implementsProtocol } from "./implementsProtocol";
 
-        // we know that `props` only contains attributes that we
-        // want to copy across, so this is safe
-        //
-        // tslint:disable-next-line: forin
-        for (const name in props) {
-            Object.defineProperty(
-                target,
-                name,
-                props[name],
-            );
-        }
+interface GuessMediaType {
+    guessMediaType(): string;
+}
+
+const GuessMediaTypeProtocol = [ "guessMediaType" ];
+
+interface Retrieve {
+    retrieve(): any;
+}
+const RetrieveProtocol = [ "retrieve" ];
+
+// tslint:disable-next-line: max-classes-per-file
+class UnitTestExample {
+    public fn1() {
+        return;
+    }
+
+    public guessMediaType() {
+        return "text/html";
+    }
+}
+
+describe("implementsProtocol()", () => {
+    it("returns `true` if an object implements the given protocol", () => {
+        const unit = new UnitTestExample();
+
+        const actualValue = implementsProtocol<GuessMediaType>(unit, GuessMediaTypeProtocol);
+        expect(actualValue).to.equal(true);
     });
 
-    // all done
-    return target as Target & Source;
-}
+    it("returns `false` if an object does not implement the given protocol", () => {
+        const unit = new UnitTestExample();
+
+        const actualValue = implementsProtocol<Retrieve>(unit, RetrieveProtocol);
+        expect(actualValue).to.equal(false);
+    });
+});

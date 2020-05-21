@@ -32,9 +32,37 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+/**
+ * Turns `target` into an instance of the intersection type, by
+ * adding `source`'s attributes and methods to the `target`.
+ *
+ * Pass in `<Source>.prototype` if you only want to add methods to
+ * `target`.
+ * Pass in a 3rd parameter - an instance of `<Source>` - if you also
+ * need to copy attributes over to `target`.
+ *
+ * NOTE: returns the (modified) original `target` object.
+ */
+export function addExtensions<Target, Source>(target: Target, ...sources: Source[]): Target & Source {
+    // nothing special here
+    //
+    // we just copy from each source in turn over to our target
+    sources.forEach((source) => {
+        const props = Object.getOwnPropertyDescriptors(source);
+
+        // we know that `props` only contains attributes that we
+        // want to copy across, so this is safe
+        //
+        // tslint:disable-next-line: forin
+        for (const name in props) {
+            Object.defineProperty(
+                target,
+                name,
+                props[name],
+            );
+        }
+    });
+
+    // all done
+    return target as Target & Source;
+}

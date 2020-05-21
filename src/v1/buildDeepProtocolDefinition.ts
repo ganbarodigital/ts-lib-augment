@@ -32,9 +32,50 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./addExtensions";
-export * from "./buildProtocolDefinition";
-export * from "./buildDeepProtocolDefinition";
-export * from "./hasAllMethodsCalled";
-export * from "./ProtocolDefinition";
-export * from "./implementsProtocol";
+import { ProtocolDefinition } from "./ProtocolDefinition";
+
+// This code has been adapted from:
+//
+// adapted from https://stackoverflow.com/a/47714550
+
+function isGetter<T extends object>(x: T, name: keyof T) {
+    return (Object.getOwnPropertyDescriptor(x, name) || {} ).get !== undefined;
+}
+
+function isFunction<T extends object>(x: T, name: keyof T ) {
+    return typeof x[name] === "function";
+}
+
+function getAllMethodsFrom<T extends object>(x: T): string[] {
+    return (
+        x
+        && x !== Object.prototype
+        && Object.getOwnPropertyNames(x)
+            .filter((name) => isGetter(x, name as keyof T) || isFunction(x, name as keyof T))
+            .concat(getAllMethodsFrom(Object.getPrototypeOf(x)))
+     ) || [];
+}
+
+function getDistinctMethodsFrom(x: object) {
+    return Array.from(new Set(getAllMethodsFrom(x)));
+}
+
+function getUserFunctionsFrom(x: object) {
+    return getDistinctMethodsFrom(x)
+        .filter((name) => name !== "constructor" && !name.startsWith( "__" ));
+}
+
+/**
+ * type factory. Builds a ProtocolDefinition.
+ *
+ * This function supports:
+ *
+ * - getters and methods in your class
+ * - getters and methods defined in your parent classes
+ *
+ * As a result, it will be slower than `buildProtocolDefinition()`. Use this
+ * only where you definitely need the extra features.
+ */
+export function buildDeepProtocolDefinition(input: object): ProtocolDefinition {
+    return getUserFunctionsFrom(input);
+}

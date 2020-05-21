@@ -21,6 +21,26 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+## v0.2.0
+
+Released Thursday, 21st May 2020.
+
+### Backwards-Compatibility Breaks
+
+* `augment()` is now `addExtensions()`
+
+### New
+
+* Added `hasAllMethodsCalled()`.
+* Added `buildDeepProtocolDefinition()`.
+* Added `buildProtocolDefinition()`.
+* Added `implementsProtocol()`.
+* Added `PrototypeDefinition`.
+
+## v0.1.0
+
+Released Wednesday, 20th May 2020.
+
 ### New
 
 * Added `augment()`
