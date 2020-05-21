@@ -61,7 +61,7 @@ class Unit2 {
     }
 }
 
-describe("augment()", () => {
+describe("addExtensions()", () => {
     describe("on objects", () => {
         it("copies methods from source prototype to target", () => {
             const target = new Unit1();
