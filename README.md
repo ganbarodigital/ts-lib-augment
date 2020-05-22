@@ -19,6 +19,7 @@ Use this TypeScript library to add additional features to a TypeScript type at r
   - [addExtensions()](#addextensions)
   - [buildProtocolDefinition()](#buildprotocoldefinition)
   - [buildDeepProtocolDefinition()](#builddeepprotocoldefinition)
+  - [implementsProtocol()](#implementsprotocol)
   - [hasAllMethodsCalled()](#hasallmethodscalled)
 - [NPM Scripts](#npm-scripts)
   - [npm run clean](#npm-run-clean)
@@ -150,7 +151,7 @@ function isJson(input: Filepath & MaybeGetMediaType) {
     //
     // it checks the `input` object, to see if it contains the functions
     // listed in the `GetMediaTypeProtocol`.
-    if (!implementsProtocol(input, GetMediaTypeProtocol)) {
+    if (!implementsProtocol<GetMediaType>(input, GetMediaTypeProtocol)) {
        return false;
     }
 
@@ -292,7 +293,7 @@ function isJson(input: MaybeGetMediaType) {
     //
     // it checks the `input` object, to see if it contains the functions
     // listed in the `GetMediaTypeProtocol`.
-    if (!implementsProtocol(input, GetMediaTypeProtocol)) {
+    if (!implementsProtocol<GetMediaType>(input, GetMediaTypeProtocol)) {
        return false;
     }
 
@@ -382,6 +383,47 @@ import { ProtocolDefinition } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
  * only where you definitely need the extra features.
  */
 export function buildDeepProtocolDefinition(input: object): ProtocolDefinition;
+```
+
+### implementsProtocol()
+
+```typescript
+// how to import into your own code
+import { implementsProtocol } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+
+/**
+ * type guard. Returns `true` if `input` has all the methods described
+ * in `protocol`. Returns `false` otherwise.
+ *
+ * We check:
+ * - that the methods all exist on input
+ *
+ * We do not check:
+ * - that the methods have the right type signatures
+ * - for Symbols
+ */
+export function implementsProtocol<T>(
+    input: object & ({} | T),
+    protocol: ProtocolDefinition,
+): input is T;
+```
+
+`implementsProtocol()` is a _type guard_. Use it to prove to the TypeScript compiler that `input` does implement all the methods of interface `<T>`.
+
+```typescript
+function mustMatchMediaType(input: MaybeGuessMediaType) {
+    // NOTE - you must pass in the protocol as a generic parameter,
+    // otherwse the type guard won't tell the compiler that
+    // `input` is a `GetMediaType` (in this example)
+    if (!implementsProtocol<GuessMediaType>(input, GuessMediaTypeProtoDef)) {
+        return;
+    }
+
+    // if we get here, then `input` has what we need
+    const parts = input.guessMediaType().parse();
+
+    // ...
+}
 ```
 
 #### Q & A:
