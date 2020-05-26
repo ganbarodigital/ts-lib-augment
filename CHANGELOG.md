@@ -21,6 +21,11 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+### Deprecated
+
+* `addExtensions()` is now deprecated
+  - use `addExtension()` instead
+
 ## v0.2.0
 
 Released Thursday, 21st May 2020.

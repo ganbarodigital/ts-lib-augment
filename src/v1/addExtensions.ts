@@ -42,6 +42,8 @@
  * need to copy attributes over to `target`.
  *
  * NOTE: returns the (modified) original `target` object.
+ *
+ * @deprecated Use addExtension instead
  */
 export function addExtensions<Target, Source>(target: Target, ...sources: Source[]): Target & Source {
     // nothing special here
