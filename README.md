@@ -16,7 +16,7 @@ Use this TypeScript library to add additional features to a TypeScript type at r
   - [Programming By Feature aka The Golang Thing](#programming-by-feature-aka-the-golang-thing)
 - [API](#api)
   - [ProtocolDefinition](#protocoldefinition)
-  - [addExtensions()](#addextensions)
+  - [addExtension()](#addextension)
   - [buildProtocolDefinition()](#buildprotocoldefinition)
   - [buildDeepProtocolDefinition()](#builddeepprotocoldefinition)
   - [implementsProtocol()](#implementsprotocol)
@@ -36,7 +36,7 @@ npm install @ganbarodigital/ts-lib-augmentations
 
 ```typescript
 // add this import to your Typescript code
-import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
+import { addExtension } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -208,12 +208,12 @@ There are pros and cons to using `buildProtocolDefinition()`:
 An extension needs to be added to your objects at runtime. It has to be added to every object after that object has been created.
 
 ```typescript
-import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+import { addExtension } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 function doSomething() {
     // we create a new Filepath type,
     // and then add in the `getMediaType()` function from the class
-    const path = addExtensions(
+    const path = addExtension(
         new Filepath("/tmp/some-file"),
         FilepathGetMediaType.protocol,
     );
@@ -322,11 +322,11 @@ export type ProtocolDefinition = string[];
 
 `Protocol` is a value type. It contains a list of the methods implemented by an _extension_.
 
-### addExtensions()
+### addExtension()
 
 ```typescript
 // how to import into your own code
-import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+import { addExtension } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 /**
  * Turns `target` into an instance of the intersection type, by
@@ -339,10 +339,14 @@ import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
  *
  * NOTE: returns the (modified) original `target` object.
  */
-export function addExtensions<Target, Source>(target: Target, ...sources: Source[]): Target & Source;
+export function addExtension<Target, Source>(
+    target: Target,
+    source: Source,
+    seed?: Source
+): Target & Source;
 ```
 
-`addExtensions()` is a _transform function_. It copes any visible properties from each `source` onto the `target`, and then returns the modified `target` object as an instance of the intersection type.
+`addExtension()` is a _transform function_. It copes any visible properties from each `source` onto the `target`, and then returns the modified `target` object as an instance of the intersection type.
 
 ### buildProtocolDefinition()
 
@@ -428,11 +432,11 @@ function mustMatchMediaType(input: MaybeGuessMediaType) {
 
 #### Q & A:
 
-* why doesn't `addExtensions()` treat `target` as immutable?
+* why doesn't `addExtension()` treat `target` as immutable?
 
   In a word: _performance_. In real-world uses, `target` is going to be the largest object to start with, and each `source` will typically only have one or two methods to be copied across.
 
-  If we had to copy everything from `target` too, that would make `addExtensions()` much more expensive, because we'd have to do a deep clone of `target` to make this work without surprises.
+  If we had to copy everything from `target` too, that would make `addExtension()` much more expensive, because we'd have to do a deep clone of `target` to make this work without surprises.
 
 ### hasAllMethodsCalled()
 
