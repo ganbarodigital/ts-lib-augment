@@ -72,4 +72,11 @@ describe("implementsProtocol()", () => {
         const actualValue = implementsProtocol<Retrieve>(unit, RetrieveProtocol);
         expect(actualValue).to.equal(false);
     });
+
+    it("returns `false` if given an empty protocol", () => {
+        const unit = new UnitTestExample();
+
+        const actualValue = implementsProtocol<Retrieve>(unit, []);
+        expect(actualValue).to.equal(false);
+    });
 });
