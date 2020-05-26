@@ -72,11 +72,24 @@ class UnitTestGetMediaType extends UnitTestGuessMediaType {
     }
 }
 
+// tslint:disable-next-line: max-classes-per-file
+class UnitTestMediaTypeGetter extends ExampleValue {
+    get mediaType() {
+        return this.valueOf();
+    }
+}
+
 describe("buildDeepProtocolDefinition()", () => {
     it("can detect methods defined in a base class", () => {
         const expectedValue = [ "getMediaType", "guessMediaType" ];
         const actualValue = buildDeepProtocolDefinition(UnitTestGetMediaType.prototype);
 
+        expect(actualValue).to.eql(expectedValue);
+    });
+
+    it("can detect getters", () => {
+        const expectedValue = [ "mediaType", "valueOf" ];
+        const actualValue = buildDeepProtocolDefinition(UnitTestMediaTypeGetter.prototype);
         expect(actualValue).to.eql(expectedValue);
     });
 });

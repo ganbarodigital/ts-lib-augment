@@ -36,10 +36,11 @@ import { ProtocolDefinition } from "./ProtocolDefinition";
 
 // This code has been adapted from:
 //
-// adapted from https://stackoverflow.com/a/47714550
+// https://stackoverflow.com/a/47714550
 
 function isGetter<T extends object>(x: T, name: keyof T) {
-    return (Object.getOwnPropertyDescriptor(x, name) || {} ).get !== undefined;
+    // typecast because this cannot fail
+    return (Object.getOwnPropertyDescriptor(x, name) as PropertyDescriptor).get !== undefined;
 }
 
 function isFunction<T extends object>(x: T, name: keyof T ) {

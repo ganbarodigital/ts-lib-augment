@@ -16,9 +16,10 @@ Use this TypeScript library to add additional features to a TypeScript type at r
   - [Programming By Feature aka The Golang Thing](#programming-by-feature-aka-the-golang-thing)
 - [API](#api)
   - [ProtocolDefinition](#protocoldefinition)
-  - [addExtensions()](#addextensions)
+  - [addExtension()](#addextension)
   - [buildProtocolDefinition()](#buildprotocoldefinition)
   - [buildDeepProtocolDefinition()](#builddeepprotocoldefinition)
+  - [implementsProtocol()](#implementsprotocol)
   - [hasAllMethodsCalled()](#hasallmethodscalled)
 - [NPM Scripts](#npm-scripts)
   - [npm run clean](#npm-run-clean)
@@ -35,7 +36,7 @@ npm install @ganbarodigital/ts-lib-augmentations
 
 ```typescript
 // add this import to your Typescript code
-import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
+import { addExtension } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -150,7 +151,7 @@ function isJson(input: Filepath & MaybeGetMediaType) {
     //
     // it checks the `input` object, to see if it contains the functions
     // listed in the `GetMediaTypeProtocol`.
-    if (!implementsProtocol(input, GetMediaTypeProtocol)) {
+    if (!implementsProtocol<GetMediaType>(input, GetMediaTypeProtocol)) {
        return false;
     }
 
@@ -207,12 +208,12 @@ There are pros and cons to using `buildProtocolDefinition()`:
 An extension needs to be added to your objects at runtime. It has to be added to every object after that object has been created.
 
 ```typescript
-import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+import { addExtension } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 function doSomething() {
     // we create a new Filepath type,
     // and then add in the `getMediaType()` function from the class
-    const path = addExtensions(
+    const path = addExtension(
         new Filepath("/tmp/some-file"),
         FilepathGetMediaType.protocol,
     );
@@ -292,7 +293,7 @@ function isJson(input: MaybeGetMediaType) {
     //
     // it checks the `input` object, to see if it contains the functions
     // listed in the `GetMediaTypeProtocol`.
-    if (!implementsProtocol(input, GetMediaTypeProtocol)) {
+    if (!implementsProtocol<GetMediaType>(input, GetMediaTypeProtocol)) {
        return false;
     }
 
@@ -321,11 +322,11 @@ export type ProtocolDefinition = string[];
 
 `Protocol` is a value type. It contains a list of the methods implemented by an _extension_.
 
-### addExtensions()
+### addExtension()
 
 ```typescript
 // how to import into your own code
-import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+import { addExtension } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
 
 /**
  * Turns `target` into an instance of the intersection type, by
@@ -338,10 +339,14 @@ import { addExtensions } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
  *
  * NOTE: returns the (modified) original `target` object.
  */
-export function addExtensions<Target, Source>(target: Target, ...sources: Source[]): Target & Source;
+export function addExtension<Target, Source>(
+    target: Target,
+    source: Source,
+    seed?: Source
+): Target & Source;
 ```
 
-`addExtensions()` is a _transform function_. It copes any visible properties from each `source` onto the `target`, and then returns the modified `target` object as an instance of the intersection type.
+`addExtension()` is a _transform function_. It copes any visible properties from each `source` onto the `target`, and then returns the modified `target` object as an instance of the intersection type.
 
 ### buildProtocolDefinition()
 
@@ -384,13 +389,54 @@ import { ProtocolDefinition } from "@ganbarodigital/ts-lib-augmentations/lib/v1"
 export function buildDeepProtocolDefinition(input: object): ProtocolDefinition;
 ```
 
+### implementsProtocol()
+
+```typescript
+// how to import into your own code
+import { implementsProtocol } from "@ganbarodigital/ts-lib-augmentations/lib/v1";
+
+/**
+ * type guard. Returns `true` if `input` has all the methods described
+ * in `protocol`. Returns `false` otherwise.
+ *
+ * We check:
+ * - that the methods all exist on input
+ *
+ * We do not check:
+ * - that the methods have the right type signatures
+ * - for Symbols
+ */
+export function implementsProtocol<T>(
+    input: object & ({} | T),
+    protocol: ProtocolDefinition,
+): input is T;
+```
+
+`implementsProtocol()` is a _type guard_. Use it to prove to the TypeScript compiler that `input` does implement all the methods of interface `<T>`.
+
+```typescript
+function mustMatchMediaType(input: MaybeGuessMediaType) {
+    // NOTE - you must pass in the protocol as a generic parameter,
+    // otherwse the type guard won't tell the compiler that
+    // `input` is a `GetMediaType` (in this example)
+    if (!implementsProtocol<GuessMediaType>(input, GuessMediaTypeProtoDef)) {
+        return;
+    }
+
+    // if we get here, then `input` has what we need
+    const parts = input.guessMediaType().parse();
+
+    // ...
+}
+```
+
 #### Q & A:
 
-* why doesn't `addExtensions()` treat `target` as immutable?
+* why doesn't `addExtension()` treat `target` as immutable?
 
   In a word: _performance_. In real-world uses, `target` is going to be the largest object to start with, and each `source` will typically only have one or two methods to be copied across.
 
-  If we had to copy everything from `target` too, that would make `addExtensions()` much more expensive, because we'd have to do a deep clone of `target` to make this work without surprises.
+  If we had to copy everything from `target` too, that would make `addExtension()` much more expensive, because we'd have to do a deep clone of `target` to make this work without surprises.
 
 ### hasAllMethodsCalled()
 
